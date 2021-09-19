@@ -1,8 +1,10 @@
-using Terraria.ModLoader;
+using JetBrains.Annotations;
+using TomatoLib;
 
 namespace Fluent
 {
-	public class Fluent : Mod
+	[UsedImplicitly]
+	public class Fluent : TomatoMod
 	{
 	}
 }
