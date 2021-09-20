@@ -4,9 +4,9 @@ using TomatoLib;
 
 namespace Fluent
 {
-	[UsedImplicitly]
-	public class Fluent : TomatoMod
-	{
+    [UsedImplicitly]
+    public class Fluent : TomatoMod
+    {
         public override void Unload()
         {
             base.Unload();
