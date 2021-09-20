@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fluent", "Fluent.csproj", "{AAB087A5-0036-46E6-A485-028D650FAFAD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TomatoLib", "TomatoLib\TomatoLib.csproj", "{A3AEF1F1-62BC-40B3-84D2-AA8C813608D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAB087A5-0036-46E6-A485-028D650FAFAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB087A5-0036-46E6-A485-028D650FAFAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB087A5-0036-46E6-A485-028D650FAFAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB087A5-0036-46E6-A485-028D650FAFAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3AEF1F1-62BC-40B3-84D2-AA8C813608D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3AEF1F1-62BC-40B3-84D2-AA8C813608D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3AEF1F1-62BC-40B3-84D2-AA8C813608D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3AEF1F1-62BC-40B3-84D2-AA8C813608D8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EECD2166-D213-4061-9AB3-4E9E6CC15122}
+	EndGlobalSection
+EndGlobal
