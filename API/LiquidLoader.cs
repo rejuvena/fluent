@@ -3,29 +3,49 @@
 #endregion
 
 using System.Collections.Generic;
-using Terraria.ID;
+using Fluent.API.Defaults;
+using JetBrains.Annotations;
 
 namespace Fluent.API
 {
     public static class LiquidLoader
     {
-        internal static readonly List<ModLiquid> Liquids = new();
-        internal static readonly List<GlobalLiquid> Globals = new();
+        // Don't construct these in the static constructor
+        // in order to ensure Liquids is instantiated first.
+        [UsedImplicitly]
+        public static WaterLiquid Water;
 
-        public static int LiquidCount => LiquidID.Count + Liquids.Count;
+        [UsedImplicitly]
+        public static LavaLiquid Lava;
 
-        public static ModLiquid GetLiquid(int type) =>
-            type >= LiquidID.Count && type < LiquidCount ? Liquids[type - LiquidID.Count] : null;
+        [UsedImplicitly]
+        public static HoneyLiquid Honey;
+
+        internal static Dictionary<byte, ModLiquid> Liquids = new();
+        internal static List<GlobalLiquid> Globals = new();
+
+        public static int LiquidCount => Liquids.Count;
+
+        public static ModLiquid GetLiquid(byte type) => Liquids.TryGetValue(type, out ModLiquid liquid) ? liquid : null;
 
         public static void RegisterLiquid(ModLiquid liquid)
         {
-            Liquids.Add(liquid);
-            liquid.Type = LiquidCount - 1;
+            Liquids.Add(liquid.Type, liquid);
+            liquid.Type = (byte) (LiquidCount - 1);
         }
 
         public static void RegisterGlobal(GlobalLiquid global)
         {
             Globals.Add(global);
+        }
+
+        public static void Load()
+        {
+            Liquids = new Dictionary<byte, ModLiquid>();
+
+            Water = new WaterLiquid();
+            Lava = new LavaLiquid();
+            Honey = new HoneyLiquid();
         }
 
         public static void Unload()

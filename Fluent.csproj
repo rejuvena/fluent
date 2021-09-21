@@ -8,8 +8,14 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Fluent.Tests\**" />
+    <Compile Remove="FluentDotTests\**" />
     <Compile Remove="TomatoLib\**" />
+    <EmbeddedResource Remove="Fluent.Tests\**" />
+    <EmbeddedResource Remove="FluentDotTests\**" />
     <EmbeddedResource Remove="TomatoLib\**" />
+    <None Remove="Fluent.Tests\**" />
+    <None Remove="FluentDotTests\**" />
     <None Remove="TomatoLib\**" />
   </ItemGroup>
   <ItemGroup>

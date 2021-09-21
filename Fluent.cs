@@ -7,6 +7,13 @@ namespace Fluent
     [UsedImplicitly]
     public class Fluent : TomatoMod
     {
+        public override void Load()
+        {
+            base.Load();
+
+            LiquidLoader.Load();
+        }
+
         public override void Unload()
         {
             base.Unload();

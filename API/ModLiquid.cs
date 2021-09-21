@@ -8,7 +8,7 @@ namespace Fluent.API
 {
     public abstract class ModLiquid : ModType
     {
-        public int Type { get; internal set; }
+        public byte Type { get; internal set; }
 
         protected sealed override void Register()
         {
