@@ -8,6 +8,8 @@ namespace Fluent.API.Modules
 {
     public interface ILiquidLoaderModule
     {
+        LiquidLoader Loader { get; }
+
         void Load();
 
         void PostSetup(Dictionary<byte, ModLiquid> modLiquids);

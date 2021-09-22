@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Fluent.API;
@@ -16,9 +17,10 @@ namespace Fluent
             base.Load();
 
             TypeMimicker.MimickingTypes = TypeMimicker.FindMimickingTypes(Code).ToList();
+            IEnumerable<MethodInfo> methods = TypeMimicker.FindMethodsWithMimics(Code);
             ModLogger.Debug($"Found types to mimic: {string.Join(", ", TypeMimicker.MimickingTypes)}");
 
-            foreach (MethodInfo method in TypeMimicker.FindMethodsWithMimics(Code))
+            foreach (MethodInfo method in methods)
             {
                 ModLogger.Debug($"Mimicking types in: {method.DeclaringType?.FullName}::{method.Name}");
                 TypeMimicker.MimicTypesIn(method);

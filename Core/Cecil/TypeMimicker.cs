@@ -46,10 +46,16 @@ namespace Fluent.Core.Cecil
                 
                 foreach (Type mimicType in MimickingTypes)
                 {
-                    if (instr.Operand.GetType().GetCachedField("DeclaringType") is not null)
-                        instr.Operand.SetFieldValue("DeclaringType", ToDefinition(il, mimicType));
-                    else if (instr.Operand.GetType().GetCachedProperty("DeclaringType") is not null)
-                        instr.Operand.GetType().GetCachedProperty("DeclaringType").SetValue(instr.Operand, ToDefinition(il, mimicType));
+                    if (instr.Operand.GetType().GetCachedField("DeclaringType") is { } field)
+                    {
+                        if (AreRefsEqual(field.GetValue<MemberReference>(instr.Operand), mimicType))
+                            field.SetValue(instr.Operand, ToDefinition(il, mimicType));
+                    }
+                    else if (instr.Operand.GetType().GetCachedProperty("DeclaringType") is { } property)
+                    {
+                        if (AreRefsEqual(property.GetValue<MemberReference>(instr.Operand), mimicType))
+                            property.SetValue(instr.Operand, ToDefinition(il, mimicType));
+                    }
 
                     //switch (instr.Operand)
                     //{
@@ -89,18 +95,28 @@ namespace Fluent.Core.Cecil
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool AreRefsEqual(MemberReference definition, Type loaded)
-        {
-            (string ns, string name) = GetMimicData(loaded);
-
-            return definition.Name == ns && definition.Name == name;
-        }
+        private static bool AreRefsEqual(MemberReference definition, Type loaded) =>
+            definition.FullName == loaded.FullName;
 
         public static TypeReference ToDefinition(ILContext context, Type type)
         {
             (string ns, string name) = GetMimicData(type);
 
-            return context.Import(Type.GetType(ns + '.' + name));
+            Assembly asm = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(x =>
+                    type.FullName != null && x.GetName().Name == ns.Split('.')[0]
+                );
+
+            // tModLoader assembly name is different
+            if (ns.Split('.')[0] == "Terraria")
+                asm = typeof(ModLoader).Assembly;
+
+            Type toUse = null;
+
+            if (asm is not null)
+                toUse = asm.GetType(ns + '.' + name);
+
+            return context.Import(toUse);
         }
 
         public static (string ns, string name) GetMimicData(Type type)

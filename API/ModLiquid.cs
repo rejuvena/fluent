@@ -13,7 +13,7 @@ namespace Fluent.API
 
         public ModLiquidWaterStyle LiquidStyle { get; }
 
-        public abstract int WaterfallLength { get; }
+        // public abstract int WaterfallLength { get; }
 
         public abstract float DefaultOpacity { get; }
 

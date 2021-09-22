@@ -9,6 +9,8 @@ namespace Fluent.API.Modules
 {
     public abstract class LoaderModule : ILiquidLoaderModule
     {
+        public LiquidLoader Loader { get; set; }
+
         public virtual void Load()
         {
             ModContent.GetInstance<Fluent>().ModLogger.Info($"Loading module: {GetType().Name}");

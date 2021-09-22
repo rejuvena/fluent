@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using Fluent.API.Defaults;
 using Fluent.API.Modules;
+using Fluent.API.Modules.Defaults;
 using JetBrains.Annotations;
 using TomatoLib.Common.Systems;
 
@@ -26,9 +27,20 @@ namespace Fluent.API
         internal Dictionary<byte, ModLiquid> Liquids = new();
         internal List<GlobalLiquid> Globals = new();
 
-        private List<ILiquidLoaderModule> Modules { get; } = new();
+        private List<ILiquidLoaderModule> Modules { get; }
 
         public int LiquidCount => Liquids.Count;
+
+        public LiquidLoader()
+        {
+            Modules = new List<ILiquidLoaderModule>
+            {
+                new LiquidRendererModule
+                {
+                    Loader = this
+                }
+            };
+        }
 
         public ModLiquid GetLiquid(byte type) => Liquids.TryGetValue(type, out ModLiquid liquid) ? liquid : null;
 
@@ -46,7 +58,7 @@ namespace Fluent.API
         // If someone ever needs this...
         public void AddModule(ILiquidLoaderModule module) => Modules.Add(module);
 
-        public override void Load()
+        public override void OnModLoad()
         {
             Liquids = new Dictionary<byte, ModLiquid>();
 
