@@ -4,52 +4,74 @@
 
 using System.Collections.Generic;
 using Fluent.API.Defaults;
+using Fluent.API.Modules;
 using JetBrains.Annotations;
+using TomatoLib.Common.Systems;
 
 namespace Fluent.API
 {
-    public static class LiquidLoader
+    public sealed class LiquidLoader : SingletonSystem<LiquidLoader>
     {
         // Don't construct these in the static constructor
         // in order to ensure Liquids is instantiated first.
         [UsedImplicitly]
-        public static WaterLiquid Water;
+        public WaterLiquid Water;
 
         [UsedImplicitly]
-        public static LavaLiquid Lava;
+        public LavaLiquid Lava;
 
         [UsedImplicitly]
-        public static HoneyLiquid Honey;
+        public HoneyLiquid Honey;
 
-        internal static Dictionary<byte, ModLiquid> Liquids = new();
-        internal static List<GlobalLiquid> Globals = new();
+        internal Dictionary<byte, ModLiquid> Liquids = new();
+        internal List<GlobalLiquid> Globals = new();
 
-        public static int LiquidCount => Liquids.Count;
+        private List<ILiquidLoaderModule> Modules { get; } = new();
 
-        public static ModLiquid GetLiquid(byte type) => Liquids.TryGetValue(type, out ModLiquid liquid) ? liquid : null;
+        public int LiquidCount => Liquids.Count;
 
-        public static void RegisterLiquid(ModLiquid liquid)
+        public ModLiquid GetLiquid(byte type) => Liquids.TryGetValue(type, out ModLiquid liquid) ? liquid : null;
+
+        public void RegisterLiquid(ModLiquid liquid)
         {
             Liquids.Add(liquid.Type, liquid);
             liquid.Type = (byte) (LiquidCount - 1);
         }
 
-        public static void RegisterGlobal(GlobalLiquid global)
+        public void RegisterGlobal(GlobalLiquid global)
         {
             Globals.Add(global);
         }
 
-        public static void Load()
+        // If someone ever needs this...
+        public void AddModule(ILiquidLoaderModule module) => Modules.Add(module);
+
+        public override void Load()
         {
             Liquids = new Dictionary<byte, ModLiquid>();
 
             Water = new WaterLiquid();
             Lava = new LavaLiquid();
             Honey = new HoneyLiquid();
+
+            foreach (ILiquidLoaderModule module in Modules)
+                module.Load();
         }
 
-        public static void Unload()
+
+        public void PostSetup()
         {
+            foreach (ILiquidLoaderModule module in Modules)
+                module.PostSetup(Liquids);
+        }
+
+        public override void Unload()
+        {
+            base.Unload();
+
+            foreach (ILiquidLoaderModule module in Modules)
+                module.Unload();
+
             Liquids.Clear();
             Globals.Clear();
         }

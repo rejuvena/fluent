@@ -10,6 +10,10 @@ namespace Fluent.API.Defaults
     [Autoload(false)]
     public class LavaLiquid : ModLiquid
     {
+        public override int WaterfallLength => 3;
+
+        public override float DefaultOpacity => 0.95f;
+
         internal LavaLiquid()
         {
             Type = LiquidID.Lava;

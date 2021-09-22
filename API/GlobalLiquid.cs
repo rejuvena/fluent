@@ -10,7 +10,7 @@ namespace Fluent.API
     {
         protected sealed override void Register()
         {
-            LiquidLoader.RegisterGlobal(this);
+            LiquidLoader.Instance.RegisterGlobal(this);
             SetStaticDefaults();
         }
     }

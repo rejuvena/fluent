@@ -10,6 +10,10 @@ namespace Fluent.API.Defaults
     [Autoload(false)]
     public class HoneyLiquid : ModLiquid
     {
+        public override int WaterfallLength => 2;
+
+        public override float DefaultOpacity => 0.95f;
+
         internal HoneyLiquid()
         {
             Type = LiquidID.Honey;

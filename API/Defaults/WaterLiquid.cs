@@ -10,6 +10,10 @@ namespace Fluent.API.Defaults
     [Autoload(false)]
     public class WaterLiquid : ModLiquid
     {
+        public override int WaterfallLength => 10;
+
+        public override float DefaultOpacity => 0.6f;
+
         internal WaterLiquid()
         {
             Type = LiquidID.Water;

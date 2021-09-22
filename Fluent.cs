@@ -1,4 +1,8 @@
+using System.Linq;
+using System.Reflection;
 using Fluent.API;
+using Fluent.Core.Cecil;
+using Fluent.Core.Cecil.Tests;
 using JetBrains.Annotations;
 using TomatoLib;
 
@@ -11,14 +15,23 @@ namespace Fluent
         {
             base.Load();
 
-            LiquidLoader.Load();
+            TypeMimicker.MimickingTypes = TypeMimicker.FindMimickingTypes(Code).ToList();
+            ModLogger.Debug($"Found types to mimic: {string.Join(", ", TypeMimicker.MimickingTypes)}");
+
+            foreach (MethodInfo method in TypeMimicker.FindMethodsWithMimics(Code))
+            {
+                ModLogger.Debug($"Mimicking types in: {method.DeclaringType?.FullName}::{method.Name}");
+                TypeMimicker.MimicTypesIn(method);
+            }
         }
 
-        public override void Unload()
+        public override void PostAddRecipes()
         {
-            base.Unload();
+            base.PostAddRecipes();
 
-            LiquidLoader.Unload();
+            ModLogger.Debug($"Test reassurance: {TestMimic.MimicTest()}");
+
+            LiquidLoader.Instance.PostSetup();
         }
     }
 }
