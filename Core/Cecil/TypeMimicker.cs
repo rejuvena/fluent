@@ -47,9 +47,9 @@ namespace Fluent.Core.Cecil
                 foreach (Type mimicType in MimickingTypes)
                 {
                     if (instr.Operand.GetType().GetCachedField("DeclaringType") is not null)
-                        instr.Operand.SetFieldValue("DeclaringType", ToDefinition(mimicType));
+                        instr.Operand.SetFieldValue("DeclaringType", ToDefinition(il, mimicType));
                     else if (instr.Operand.GetType().GetCachedProperty("DeclaringType") is not null)
-                        instr.Operand.GetType().GetCachedProperty("DeclaringType").SetValue(instr.Operand, ToDefinition(mimicType));
+                        instr.Operand.GetType().GetCachedProperty("DeclaringType").SetValue(instr.Operand, ToDefinition(il, mimicType));
 
                     //switch (instr.Operand)
                     //{
@@ -96,11 +96,11 @@ namespace Fluent.Core.Cecil
             return definition.Name == ns && definition.Name == name;
         }
 
-        public static TypeDefinition ToDefinition(Type type)
+        public static TypeReference ToDefinition(ILContext context, Type type)
         {
             (string ns, string name) = GetMimicData(type);
 
-            return new TypeDefinition(ns, name, (TypeAttributes) type.Attributes);
+            return context.Import(Type.GetType(ns + '.' + name));
         }
 
         public static (string ns, string name) GetMimicData(Type type)
