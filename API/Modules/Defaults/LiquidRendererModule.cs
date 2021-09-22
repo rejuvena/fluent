@@ -2,18 +2,21 @@
 // Copyright (C) 2021 Tomat and Contributors, MIT License
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fluent.Core.Cecil;
 using Fluent.Mimics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Liquid;
 using Terraria.ID;
+using TomatoLib.Common.Utilities.Extensions;
 using OnLiquidRenderer = On.Terraria.GameContent.Liquid.LiquidRenderer;
 using ILLiquidRenderer = IL.Terraria.GameContent.Liquid.LiquidRenderer;
 using OnTileDrawing = On.Terraria.GameContent.Drawing.TileDrawing;
@@ -46,10 +49,10 @@ namespace Fluent.API.Modules.Defaults
             LiquidRenderer self, 
             Rectangle drawArea)
         {
-            // int[] newWaterfallLength = Loader.Liquids.Values.Select(x => x.WaterfallLength).ToArray();
+            int[] newWaterfallLength = Loader.Liquids.Values.Select(x => x.WaterfallLength).ToArray();
             float[] newDefaultOpacity = Loader.Liquids.Values.Select(x => x.DefaultOpacity).ToArray();
 
-            // LiquidRendererMimic.WATERFALL_LENGTH = newWaterfallLength;
+            LiquidRendererMimic.WATERFALL_LENGTH = newWaterfallLength;
             LiquidRendererMimic.DEFAULT_OPACITY = newDefaultOpacity;
 
             orig(self, drawArea);
@@ -57,9 +60,23 @@ namespace Fluent.API.Modules.Defaults
 
         public void ModifyDrawing(ILContext il)
         {
-            /*ILCursor c = new(il);
+            ILCursor c = new(il);
 
-            for (int i = 0; i < 5; i++)
+            if (!c.TryGotoNext(x => x.MatchLdcR4(1f)))
+            {
+                Fluent.Instance.ModLogger.PatchFailure("Terraria.GameContent.Liquid.LiquidRenderer",
+                    "InternalDraw", "ldc.r4", "1");
+                return;
+            }
+
+            c.Emit(OpCodes.Pop);
+
+            c.Emit(OpCodes.Ldloc_3);
+            c.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetCachedNestedType("LiquidDrawCache").GetCachedField("Type"));
+
+            c.EmitDelegate<Func<byte, float>>(liquid => Math.Min(Loader.GetLiquid(liquid).DefaultOpacity * 2f, 1f));
+
+            /*for (int i = 0; i < 5; i++)
                 if (!c.TryGotoNext(MoveType.AfterLabel, x => x.MatchLdloca(11)))
                 {
                     Fluent.Instance.ModLogger.PatchFailure("Terraria.GameContent.Liquid.LiquidRenderer", 
@@ -103,9 +120,15 @@ namespace Fluent.API.Modules.Defaults
         {
             SlopeType slope = tileCache.Slope;
 
-            aColor *= Loader.GetLiquid((byte) tileCache.LiquidType).DefaultOpacity;
+            // Debug drawing.
+            // Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle((int) position.X, (int) position.Y, liquidSize.Width, liquidSize.Height), Main.DiscoColor);
 
-            if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.type] || slope == SlopeType.Solid)
+            if (tileCache.wall == 0 && position.Y < Main.rockLayer)
+                Main.spriteBatch.Draw(TextureAssets.Liquid[liquidType].Value, position, liquidSize, aColor, 0f, default, 1f, SpriteEffects.None, 0f);
+
+            aColor *= Loader.GetLiquid((byte) tileCache.LiquidType).DefaultOpacity * (aColor.A / (float) byte.MaxValue);
+
+            if (!TileID.Sets.BlocksWaterDrawingBehindSelf[tileCache.type] && slope == SlopeType.Solid)
             {
                 Main.spriteBatch.Draw(TextureAssets.Liquid[liquidType].Value, position, liquidSize, aColor, 0f, default, 1f, SpriteEffects.None, 0f);
                 return;
