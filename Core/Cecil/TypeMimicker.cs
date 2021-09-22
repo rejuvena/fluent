@@ -41,20 +41,28 @@ namespace Fluent.Core.Cecil
 
             foreach (Instruction instr in c.Instrs)
             {
+                if (instr.Operand is null)
+                    continue;
+                
                 foreach (Type mimicType in MimickingTypes)
                 {
-                    switch (instr.Operand)
-                    {
-                        case MethodDefinition method:
-                            if (AreRefsEqual(method.DeclaringType, mimicType))
-                                method.DeclaringType = ToDefinition(mimicType);
+                    if (instr.Operand.GetType().GetCachedField("DeclaringType") is not null)
+                        instr.Operand.SetFieldValue("DeclaringType", ToDefinition(mimicType));
+                    else if (instr.Operand.GetType().GetCachedProperty("DeclaringType") is not null)
+                        instr.Operand.GetType().GetCachedProperty("DeclaringType").SetValue(instr.Operand, ToDefinition(mimicType));
+
+                    //switch (instr.Operand)
+                    //{
+                        /*case MethodDefinition member:
+                            if (AreRefsEqual(member.DeclaringType, mimicType))
+                                member.DeclaringType = ToDefinition(mimicType);
 
                             // Not needed... yet.
                             // il.Import / il.Module.ImportReference - our lord and savior lol ecs dee
                             // if (AreRefsEqual(method.ReturnType, mimicType))
-                            break;
-
-                        case TypeDefinition type:
+                            break;*/
+                        
+                        /*case TypeDefinition type:
                             if (AreRefsEqual(type, mimicType))
                                 instr.Operand = ToDefinition(mimicType);
                             break;
@@ -63,7 +71,7 @@ namespace Fluent.Core.Cecil
                         case FieldDefinition field:
                             if (AreRefsEqual(field.DeclaringType, mimicType))
                                 field.DeclaringType = ToDefinition(mimicType);
-                            break;
+                            break;*/
 
                         // Properties and events internally used methods.
                         // Parameters can't be modified at runtime in an already-loaded assembly.
@@ -75,7 +83,7 @@ namespace Fluent.Core.Cecil
 
                         //case ParameterDefinition param:
                         //    break;
-                    }
+                    //}
                 }
             }
         }
