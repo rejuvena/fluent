@@ -7,7 +7,6 @@ using Terraria.ModLoader;
 
 namespace Fluent.API.Defaults
 {
-    [Autoload(false)]
     public class WaterLiquid : ModLiquid
     {
         public override int WaterfallLength => 10;
@@ -16,8 +15,9 @@ namespace Fluent.API.Defaults
 
         internal WaterLiquid()
         {
-            Type = LiquidID.Water;
+            Type = LiquidID.Water; 
             ((ILoadable) this).Load(ModContent.GetInstance<Fluent>());
+            ContentInstance.Register(this);
         }
     }
 }

@@ -6,24 +6,13 @@ using System.Collections.Generic;
 using Fluent.API.Defaults;
 using Fluent.API.Modules;
 using Fluent.API.Modules.Defaults;
-using JetBrains.Annotations;
+using Terraria.ModLoader;
 using TomatoLib.Common.Systems;
 
 namespace Fluent.API
 {
     public sealed class LiquidLoader : SingletonSystem<LiquidLoader>
     {
-        // Don't construct these in the static constructor
-        // in order to ensure Liquids is instantiated first.
-        [UsedImplicitly]
-        public WaterLiquid Water;
-
-        [UsedImplicitly]
-        public LavaLiquid Lava;
-
-        [UsedImplicitly]
-        public HoneyLiquid Honey;
-
         internal Dictionary<byte, ModLiquid> Liquids = new();
         internal List<GlobalLiquid> Globals = new();
 
@@ -48,11 +37,13 @@ namespace Fluent.API
         {
             Liquids.Add(liquid.Type, liquid);
             liquid.Type = (byte) (LiquidCount - 1);
+            ModTypeLookup<ModLiquid>.Register(liquid);
         }
 
         public void RegisterGlobal(GlobalLiquid global)
         {
             Globals.Add(global);
+            ModTypeLookup<GlobalLiquid>.Register(global);
         }
 
         // If someone ever needs this...
@@ -62,9 +53,9 @@ namespace Fluent.API
         {
             Liquids = new Dictionary<byte, ModLiquid>();
 
-            Water = new WaterLiquid();
-            Lava = new LavaLiquid();
-            Honey = new HoneyLiquid();
+            _ = new WaterLiquid();
+            _ = new LavaLiquid();
+            _ = new HoneyLiquid();
 
             foreach (ILiquidLoaderModule module in Modules)
                 module.Load();

@@ -4,13 +4,11 @@ using System.Reflection;
 using Fluent.API;
 using Fluent.Core.Cecil;
 using Fluent.Core.Cecil.Tests;
-using JetBrains.Annotations;
 using Terraria.ModLoader;
 using TomatoLib;
 
 namespace Fluent
 {
-    [UsedImplicitly]
     public class Fluent : TomatoMod
     {
         public static Fluent Instance => ModContent.GetInstance<Fluent>();
