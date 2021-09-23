@@ -68,10 +68,11 @@ namespace Fluent.Core.Globals
 
             WorldGen.SquareTileFrame(Player.tileTargetX, Player.tileTargetY);
 
-            if (bucket.ConsumeOnUsage) 
+            if (bucket.ConsumeOnUsage)
+            {
                 item.stack--;
-
-            player.PutItemInInventoryFromItemUsage(bucket.EmptyItem, player.selectedItem);
+                player.PutItemInInventoryFromItemUsage(bucket.EmptyItem, player.selectedItem);
+            }
 
             // TODO: Use NetLiquidModule!
             // This should really just send a liquid update notification?
